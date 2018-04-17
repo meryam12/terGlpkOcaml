@@ -1,0 +1,3 @@
+true: package(ctypes.foreign), cclib(-lglpk)
+"src": include
+"lib": include
