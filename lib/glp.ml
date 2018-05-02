@@ -12,12 +12,12 @@ open Foreign
    How to compile: from project directory (the one containing
    directories src and lib) do: 
      ocamlbuild -use-ocamlfind glp.cmo 
-   then glp.cmo is in directory _build
+   then glp.cmo is in directory _build/lib
 
    How to infer the interfacle glp.mli: from project directory do:
      ocamlbuild -use-ocamlfind glp.inferred.mli
    then 
-     cp _build/glp.inferred.mli lib/glp.mli
+     cp _build/lib/glp.inferred.mli lib/glp.mli
    to replace the current mli with a new version. 
      
 
