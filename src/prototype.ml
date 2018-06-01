@@ -260,52 +260,6 @@ open Glp
 
 
 
-let essaie lp =
-  (* création de problème*)
-  let lp = Glp.create_problem () in
-  Glp.set_problem_name lp "Essaie";
-  Glp.set_objective_direction lp Maximize;
-  (* remplissage avec les valeurs*)
-  Glp.add_rows lp 2;
-  Glp.set_row_bnds lp 1 Upper 0.0 1.0;
-  Glp.set_row_bnds lp 2 Upper 0.0 2.0;
-  Glp.add_cols lp 2 ;
-  Glp.set_col_name lp 1 "x1";
-  Glp.set_col_bnds lp 1 Lower 0.0 0.0;
-  Glp.set_obj_coef lp 1 0.6;
-  Glp.set_col_name lp 2 "x2";
-  Glp.set_col_bnds lp 2 Lower 0.0 0.0;
-  Glp.set_obj_coef lp 2 0.5;
-  let i.(1) = 1;
-    j.(1) = 1;
-    r.(1) = 1.0;
-    i.(2) = 1;
-    j.(2) = 2;
-    r.(2) = 2.0;
-    i.(3) = 2;
-    j.(3) = 1;
-    r.(3) = 3.0;
-    i.(4) = 2;
-    j.(4) = 2;
-    r.(4) = 1.0;
-  in 
-  Glp.load_matrix lp i j r;
-  (*Solve*)
-  let params = Ctypes.allocate Glp.Types.Smcp.t in
-  Glp.init_smcp params;  
-  Glp.simplex lp params;
-  let z = Glp.get_obj_val lp; 
-    let x1 = Glp.get_col_prim(lp, 1);
-      let x2 = Glp.get_col_prim(lp, 2);
-        Printf.printf "Z = %f\n" z
-          Printf.printf "x1 = %f\n" x1
-          Printf.printf "x2 = %f\n" x2
-(* résolution du problème 
-   maximize 0.6x1 + 0.5 x2
-   subject to x1 + 2x2 <= 1
-          3x1 + x2 <= 2 
-*)
-
 
 
 

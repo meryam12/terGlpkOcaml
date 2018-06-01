@@ -103,7 +103,7 @@ struct
     | GLP_NO_BRNCH -> 3
 
 
-
+ 
 
 
 (*
@@ -148,6 +148,30 @@ non-basic fixed variable *)
 
 
 
+(*
+GLP_SOL
+basic solution;
+GLP_IPT
+interior-point solution;
+GLP_MIP
+mixed integer solution *)
+
+ type solution =
+  | GLP_SOL
+  | GLP_IPT
+  | GLP_MIP
+
+ let of_solution = function
+  | GLP_SOL -> 1
+  | GLP_IPT -> 2
+  | GLP_MIP -> 3
+
+
+
+
+
+
+
 
 
 
@@ -178,11 +202,11 @@ non-basic fixed variable *)
     let meth = field t "meth" int
     let pricing = field t "pricing" int
     let r_test = field t "r_test" int 
-    let tol_bnd = field t "tol_bnd" double
-    let tol_dj = field t "tol_dj" double
-    let tol_piv = field t "tol_piv" double
-    let obj_ll = field t "obj_ll" double
-    let obj_ul = field t "obj_ul" double
+    let tol_bnd = field t "tol_bnd" float
+    let tol_dj = field t "tol_dj" float
+    let tol_piv = field t "tol_piv" float
+    let obj_ll = field t "obj_ll" float
+    let obj_ul = field t "obj_ul" float
     let it_lim = field t "it_lim" int
     let tm_lim = field t "tm_lim" int 
     let out_frq = field t "out_frq" int
@@ -197,110 +221,113 @@ non-basic fixed variable *)
   module Iptcp = struct 
 
 
-    type i
+    type t
     (* note how struct types are defined in Ctypes:
        by giving every field in order with its type
     *)
-    let i : i structure typ = structure "glp_iptcp"
+    let t : t structure typ = structure "glp_iptcp"
     (* TODO: rename the fields with decent names *)
-    let msg_lev = field i "msg_lev" int  
-    let ord_alg = field i "ord_alg" int
-    let foo_bar = field i "foo_bar" (array 48 double) 
+    let msg_lev = field t "msg_lev" int  
+    let ord_alg = field t "ord_alg" int
+    let foo_bar = field t "foo_bar" (array 48 double) 
 
 
-    let () = seal i (* close the type: no more fields *)
+    let () = seal t (* close the type: no more fields *)
   end
 
 
   module Iocp = struct
 
-    type c
-    let c : c structure typ = structure "glp_iocp"
-    let msg_lev = field c "msg_lev" int 
-    let br_tech = field c "br_tech"int
-    let bt_tech = field c "bt_tech" int
-    let tol_int = field c "tol_int" float
-    let tol_obj = field c "tol_obj" float
-    let tm_lim  = field c "out_frq" int
-    let out_frq = field c "out_frq" int
-    let out_dly = field c "out_dly" int
-    let cb_func = field c "cb_func" void
-    let cb_info = field c "cb_info" void
-    let cb_size = field c "cb_size" int
-    let pp_tech = field c "pp_tech" int
-    let mip_gap = field c "mip_gap" float
-    let mir_cuts = field c "mir_cuts" int
-    let gmi_cuts = field c "gmi_cuts" int
-    let cov_cuts = field c "cov_cuts" int
-    let clq_cuts = field c "clq_cuts" int
-    let presolve = field c "presolve" int
-    let binarize = field c "binarize" int
-    let fp_heur = field c "fp_heur" int
-    let ps_heur = field c "ps_heur" int
-    let ps_tm_lim = field c "ps_tm_lim" int
-    let sr_heur = field c "sr_heur" int
-    let use_sol = field c "use_sol" int
-    let save_sol = field c "*save_sol" void
-    let alien = field c "alien" int
-    let foo_bar = field c "foo_bar" (array 24 double)
-    let () = seal c (* close the type: no more fields *)
+    type t
+    let t : t structure typ = structure "glp_iocp"
+    let msg_lev = field t "msg_lev" int 
+    let br_tech = field t "br_tech"int
+    let bt_tech = field t "bt_tech" int
+    let tol_int = field t "tol_int" float
+    let tol_obj = field t "tol_obj" float
+    let tm_lim  = field t "out_frq" int
+    let out_frq = field t "out_frq" int
+    let out_dly = field t "out_dly" int
+    let cb_func = field t "cb_func" void
+    let ptr cb_info = field t "cb_info" void
+    let cb_size = field t "cb_size" int
+    let pp_tech = field t "pp_tech" int
+    let mip_gap = field t "mip_gap" float
+    let mir_cuts = field t "mir_cuts" int
+    let gmi_cuts = field t "gmi_cuts" int
+    let cov_cuts = field t "cov_cuts" int
+    let clq_cuts = field t "clq_cuts" int
+    let presolve = field t "presolve" int
+    let binarize = field t "binarize" int
+    let fp_heur = field t "fp_heur" int
+    let ps_heur = field t "ps_heur" int
+    let ps_tm_lim = field t "ps_tm_lim" int
+    let sr_heur = field t "sr_heur" int
+    let use_sol = field t "use_sol" int
+    let ptr save_sol = field t "*save_sol" void
+    let alien = field t "alien" int
+    let foo_bar = field t "foo_bar" (array 24 double)
+    let () = seal t (* close the type: no more fields *)
   end
+
+
+  
   module Bfcp = struct
-    type b
-    let b : b structure typ = structure "glp_bfcp" 
-    let msg_lev = field b "msg_lev" int
-    (* let type = field b "type" int*)
-    let lu_size = field b "lu_size" int
-    let piv_tol = field b "piv_tol" float
-    let piv_lim = field b "piv_lim" int
-    let suhl = field b "suhl" int 
-    let eps_tol = field b "eps_tol" float
-    let max_gro = field b "max_gro" float
-    let nfs_max = field b "nfs_max" int
-    let upd_tol = field b "upd_tol" float
-    let nrs_max = field b "nrs_max" int
-    let rs_size = field b "rs_size" int
-    let foo_bar = field b "foo_bar" (array 38 double) 
-    let () = seal b (* close the type: no more fields *)
+    type t
+    let t : t structure typ = structure "glp_bfcp" 
+    let msg_lev = field t "msg_lev" int
+    (* let type = field t "type" int*)
+    let lu_size = field t "lu_size" int
+    let piv_tol = field t "piv_tol" float
+    let piv_lim = field t "piv_lim" int
+    let suhl = field t "suhl" int 
+    let eps_tol = field t "eps_tol" float
+    let max_gro = field t "max_gro" float
+    let nfs_max = field t "nfs_max" int
+    let upd_tol = field t "upd_tol" float
+    let nrs_max = field t "nrs_max" int
+    let rs_size = field t "rs_size" int
+    let foo_bar = field t "foo_bar" (array 38 double) 
+    let () = seal t (* close the type: no more fields *)
   end 
   module Tree = struct 
-    type tr
-    let tr : tr structure typ = structure "glp_tree"
-    let () = seal tr (* close the type: no more fields *)
+    type t
+    let t : t structure typ = structure "glp_tree"
+    let () = seal t (* close the type: no more fields *)
   end
 
 
   module Attr = struct
-    type at
-    let at : at structure typ = structure "glp_attr" 
-    let level = field at "level" int
-    let origin = field at "origin" int
-    let klass = field at "klass" int
-    let foo_bar = field at "foo_bar" (array 7 double)
-    let () = seal at (* close the type: no more fields *)
+    type t
+    let t : t structure typ = structure "glp_attr" 
+    let level = field t "level" int
+    let origin = field t "origin" int
+    let klass = field t "klass" int
+    let foo_bar = field t "foo_bar" (array 7 double)
+    let () = seal t (* close the type: no more fields *)
   end 
 
   module Mpscp = struct
-    type mp
-    let mp : mp structure typ = structure "glp_mpscp"
-    let blank = field mp "blank" int
-    let obj_name = field mp "obj_name" char
-    let tol_mps = field mp "tol_mps" float
-    let foo_bar = field mp "foo_bar" (array 17 double) 
-    let () = seal mp (* close the type: no more fields *)
+    type t
+    let t : t structure typ = structure "glp_mpscp"
+    let blank = field t "blank" int
+    let obj_name = field t "obj_name" string
+    let tol_mps = field t "tol_mps" float
+    let foo_bar = field t "foo_bar" (array 17 double) 
+    let () = seal t (* close the type: no more fields *)
   end     
 
   module Cpxcp = struct
-    type cp
-    let cp : cp structure typ = structure "glp_cpxcp" 
-    let foo_bar = field cp "foo_bar" (array 20 double) 
-    let () = seal cp (* close the type: no more fields *)
+    type t
+    let t : t structure typ = structure "glp_cpxcp" 
+    let foo_bar = field t "foo_bar" (array 20 double) 
+    let () = seal t (* close the type: no more fields *)
   end 
 
   module Tran = struct 
-    type tr
-    let tr : tr structure typ = structure "glp_tran" 
-    let () = seal tr (* close the type: no more fields *)
+    type t
+    let t : t structure typ = structure "glp_tran" 
+    let () = seal t (* close the type: no more fields *)
   end 
 
 
@@ -345,7 +372,9 @@ let add_rows =
 (* int glp_add_cols(glp_prob *lp, int ncs); *)
 let add_cols =
   foreign "glp_add_cols"
-    (problem @-> int @->returning int)
+    (problem @-> int @-> returning int)
+
+
 
 
 
@@ -353,14 +382,14 @@ let add_cols =
 
 let set_row_name  =
   foreign "glp_set_row_name"
-    (problem @-> int @-> char @-> returning void)
+    (problem @-> int @-> string @-> returning void)
 
 
 (*void glp_set_col_name(glp_prob *lp, int j, const char *name); *)
 
 let set_col_name =
   foreign "glp_set_col_name" 
-    ( problem @-> int @-> char @-> returning void)
+    ( problem @-> int @-> string @-> returning void)
 
 
 (*void glp_set_row_bnds(glp_prob *lp, int i, int type, double lb, double ub);*)
@@ -403,9 +432,33 @@ let set_mat_col  =
 
 
 (*void glp_load_matrix(glp_prob *lp, int ne, const int ia[], const int ja[], const double ar[]);*)
-let load_matrix = 
-  foreign "glp_load_matrix"
-    (problem @-> int @-> int @-> int @-> float @-> returning void)
+let load_matrix lp non_zeros =
+  let go = 
+    foreign "glp_load_matrix"
+      (problem @-> int @-> ptr int @-> ptr int @-> ptr float @-> returning void)
+  in
+  let rows =
+    non_zeros
+    |> List.map (fun (r,c,v) -> r)
+    |> (fun l -> 0 :: l)
+    |> CArray.of_list int
+    |> CArray.start
+  in
+  let cols =
+    non_zeros
+    |> List.map (fun (r,c,v) -> c)
+    |> (fun l -> 0 :: l)
+    |> CArray.of_list int
+    |> CArray.start
+  in
+  let coefs =
+    non_zeros
+    |> List.map (fun (r,c,v) -> v)
+    |> (fun l -> 0. :: l)
+    |> CArray.of_list double
+    |> CArray.start
+  in 
+  go lp (List.length non_zeros) rows cols coefs
 
 
 (* int glp_check_dup(int m, int n, int ne, const int ia[], const int ja[]) ;*)
@@ -451,13 +504,13 @@ let delete_prob =
 (*const char *glp_get_prob_name(glp_prob *P);*)
 let get_prob_name =
   foreign "glp_get_prob_name"
-    (problem @-> returning char )
+    (problem @-> returning string )
 
 
 (*const char *glp_get_obj_name(glp_prob *P);*)
 let get_obj_name =
   foreign "glp_get_obj_name"
-    (problem @-> returning char)
+    (problem @-> returning string)
 
 
 
@@ -480,12 +533,12 @@ let get_num_cols =
 (*const char *glp_get_row_name(glp_prob *P, int i);*)
 let get_row_name =
   foreign "glp_get_row_name"
-    (problem @-> int @-> returning char)
+    (problem @-> int @-> returning string)
 
 (*const char *glp_get_col_name(glp_prob *P, int j);*) 
 let get_col_name =
   foreign "glp_get_col_name"
-    (problem @-> int @-> returning char)
+    (problem @-> int @-> returning string)
 
 (*int glp_get_row_type(glp_prob *P, int i);*)
 let get_row_type =
@@ -551,12 +604,12 @@ let create_index =
 (*int glp_find_row(glp_prob *P, const char *name);*)
 let find_row =
   foreign "glp_find_row"
-    (problem @-> char @-> returning int)
+    (problem @-> string @-> returning int)
 
 (*int glp_find_col(glp_prob *P, const char *name);*)
 let find_col =
   foreign "glp_find_col"
-    (problem @-> char @-> returning int)
+    (problem @-> string @-> returning int)
 
 
 (*void glp_delete_index(glp_prob *P);*)
@@ -634,12 +687,12 @@ let cpx_basis =
 (*int glp_simplex(glp_prob *P, const glp_smcp *parm);*)
 let simplex =
   foreign "glp_simplex"
-    (problem @-> Smcp.t @-> returning int )
+    (problem @-> ptr Smcp.t @-> returning int )
 
 (*void glp_init_smcp(glp_smcp *parm)*)
 let init_smcp =
   foreign "glp_init_smcp"
-    (Smcp.t @-> returning void )
+    (ptr Smcp.t @-> returning void )
 
 
 (*int glp_get_status(glp_prob *P);*)
@@ -708,12 +761,12 @@ let get_unbnd_ray =
 (*int glp_interior(glp_prob *P, const glp_iptcp *parm);*)
 let interior =
   foreign "glp_interior"
-    (problem @-> Iptcp.i @-> returning int)
+    (problem @-> Iptcp.t @-> returning int)
 
 (*void glp_init_iptcp(glp_iptcp *parm);*)
 let init_iptcp =
   foreign "glp_init_iptcp"
-    (Iptcp.i @-> returning void)
+    (Iptcp.t @-> returning void)
 
 (*int glp_ipt_status(glp_prob *P);*)
 let ipt_status =
@@ -778,12 +831,12 @@ let get_num_bin =
 (*int glp_intopt(glp_prob *P, const glp_iocp *parm);*)
 let intopt =
   foreign "glp_intopt" 
-    (problem @-> Iocp.c @-> returning int )
+    (problem @-> Iocp.t @-> returning int )
 
 (*void glp_init_iocp(glp_iocp *parm);*)
 let init_iocp =
   foreign "glp_init_iocp"
-    (Iocp.c @-> returning void)
+    (Iocp.t @-> returning void)
 
 (*int glp_mip_status(glp_prob *P);*)
 let mip_status =
@@ -816,54 +869,54 @@ let check_kkt =
 (*int glp_print_sol(glp_prob *P, const char *fname);*)
 let print_sol =
   foreign "glp_print_sol"
-    (problem @-> char @-> returning int)
+    (problem @-> string @-> returning int)
 
 (*int glp_read_sol(glp_prob *P, const char *fname);*)
 let read_sol =
   foreign "glp_read_sol" 
-    (problem @-> char @-> returning int)
+    (problem @-> string @-> returning int)
 
 (*int glp_write_sol(glp_prob *P, const char *fname);*)
 let write_sol =
   foreign "glp_write_sol"
-    (problem @-> char @-> returning int)
+    (problem @-> string @-> returning int)
 
 (*int glp_print_ranges(glp_prob *P, int len, const int list[],
       int flags, const char *fname);*)
 let print_ranges =
   foreign "glp_print_ranges"
-    (problem @-> int @-> int @-> int @-> char @-> returning int )
+    (problem @-> int @-> int @-> int @-> string @-> returning int )
 
 (*int glp_print_ipt(glp_prob *P, const char *fname);*)
 let print_ipt =
   foreign "glp_print_ipt"
-    (problem @-> char @-> returning int  )
+    (problem @-> string @-> returning int  )
 
 (*int glp_read_ipt(glp_prob *P, const char *fname);*)
 let read_ipt = 
   foreign "glp_read_ipt"
-    (problem @-> char @-> returning int)
+    (problem @-> string @-> returning int)
 
 (*int glp_write_ipt(glp_prob *P, const char *fname);*)
 let write_ipt =
   foreign "glp_write_ipt"
-    (problem @-> char @-> returning int)
+    (problem @-> string @-> returning int)
 
 
 (*int glp_print_mip(glp_prob *P, const char *fname);*)
 let print_mip =
   foreign "glp_print_mip"
-    (problem @-> char @-> returning int)
+    (problem @-> string @-> returning int)
 
 (*int glp_read_mip(glp_prob *P, const char *fname);*)
 let read_mip =
   foreign "glp_read_mip"
-    (problem @-> char @-> returning int)
+    (problem @-> string @-> returning int)
 
 (*int glp_write_mip(glp_prob *P, const char *fname);*)
 let write_mip =
   foreign "glp_write_mip"
-    (problem @-> char @-> returning int)
+    (problem @-> string @-> returning int)
 
 
 
@@ -886,12 +939,12 @@ let bf_updated =
 (*void glp_get_bfcp(glp_prob *P, glp_bfcp *parm);*)
 let get_bfcp =
   foreign "glp_get_bfcp" 
-    (problem @-> Bfcp.b @-> returning void)
+    (problem @-> Bfcp.t @-> returning void)
 
 (*void glp_set_bfcp(glp_prob *P, const glp_bfcp *parm);*)
 let set_bfcp =
   foreign "glp_set_bfcp"
-    (problem @-> Bfcp.b @-> returning void )
+    (problem @-> Bfcp.t @-> returning void )
 
 
 
@@ -981,12 +1034,12 @@ let analyze_coef =
 (*int glp_ios_reason(glp_tree *T);*)
 let ios_reason =
   foreign "glp_ios_reason"
-    (Tree.tr @-> returning int)
+    (Tree.t @-> returning int)
 
 (*glp_prob *glp_ios_get_prob(glp_tree *T);*)
 let ios_get_prob =
   foreign "glp_ios_get_prob"
-    (Tree.tr @-> returning problem)
+    (Tree.t @-> returning problem)
 
 
 
@@ -995,64 +1048,64 @@ let ios_get_prob =
       int *t_cnt);*)
 let ios_tree_size = 
   foreign "glp_ios_tree_size"
-    (Tree.tr @-> int @-> int @-> int @-> returning void)
+    (Tree.t @-> int @-> int @-> int @-> returning void)
 
 (*int glp_ios_curr_node(glp_tree *T);*)
 let ios_curr_node = 
   foreign "glp_ios_curr_node"
-    (Tree.tr @-> returning int)
+    (Tree.t @-> returning int)
 
 (*int glp_ios_next_node(glp_tree *T, int p);*)
 let ios_next_node =
   foreign "glp_ios_next_node"
-    (Tree.tr @-> int @-> returning int)
+    (Tree.t @-> int @-> returning int)
 
 (*int glp_ios_prev_node(glp_tree *T, int p);*)
 let ios_prev_node = 
   foreign "glp_ios_prev_node"
-    (Tree.tr @-> int @-> returning int )
+    (Tree.t @-> int @-> returning int )
 
 (*int glp_ios_up_node(glp_tree *T, int p);*)
 let ios_up_node =
   foreign "glp_ios_up_node"
-    (Tree.tr @-> int @-> returning int) 
+    (Tree.t @-> int @-> returning int) 
 
 (*int glp_ios_node_level(glp_tree *T, int p);*)
 let ios_node_level =
   foreign "glp_ios_node_level"
-    (Tree.tr @-> int @-> returning int)
+    (Tree.t @-> int @-> returning int)
 
 (*double glp_ios_node_bound(glp_tree *T, int p);*)
 let ios_node_bound =
   foreign "glp_ios_node_bound"
-    (Tree.tr @-> int @-> returning float)
+    (Tree.t @-> int @-> returning float)
 
 (*int glp_ios_best_node(glp_tree *T);*)
 let ios_best_node =
   foreign "glp_ios_best_node"
-    (Tree.tr @-> returning int)
+    (Tree.t @-> returning int)
 
 (*double glp_ios_mip_gap(glp_tree *T);*)
 let ios_mip_gap =
   foreign "glp_ios_mip_gap"
-    (Tree.tr @-> returning float)
+    (Tree.t @-> returning float)
 
 (*void *glp_ios_node_data(glp_tree *T, int p);*)
 let ios_node_data =
   foreign "glp_ios_node_data"
-    (Tree.tr @-> int @-> returning void)
+    (Tree.t @-> int @-> returning void)
 
 
 (*void glp_ios_row_attr(glp_tree *T, int i, glp_attr *attr);*)
 let ios_row_attr = 
   foreign "glp_ios_row_attr"
-    (Tree.tr @-> Attr.at @-> returning void)
+    (Tree.t @-> Attr.t @-> returning void)
 
 
 (*int glp_ios_pool_size(glp_tree *T);*)
 let ios_pool_size =
   foreign "glp_ios_pool_size"
-    (Tree.tr @-> returning int)
+    (Tree.t @-> returning int)
 
 
 
@@ -1063,7 +1116,7 @@ let ios_pool_size =
    let ios_add_row tree klass =
    let go =
    foreign "glp_ios_add_row"
-    (Tree.tr @-> char @-> int @-> int @-> int @-> int @-> float @-> int @-> float @-> returning int )
+    (Tree.t @-> string @-> int @-> int @-> int @-> int @-> float @-> int @-> float @-> returning int )
    in
    go tree (of_klass klass)
 *)
@@ -1071,54 +1124,54 @@ let ios_pool_size =
 (*void glp_ios_del_row(glp_tree *T, int i);*)
 let ios_del_row = 
   foreign "glo_ios_del_row"
-    (Tree.tr @-> int @-> returning void)
+    (Tree.t @-> int @-> returning void)
 
 (*void glp_ios_clear_pool(glp_tree *T);*)
 let ios_clear_pool =
   foreign "glp_ios_clear_pool"
-    (Tree.tr @-> returning void)
+    (Tree.t @-> returning void)
 
 (*int glp_ios_can_branch(glp_tree *T, int j);*)
 let ios_can_branch =
   foreign "glp_ios_can_branch"
-    (Tree.tr @-> int @-> returning int)
+    (Tree.t @-> int @-> returning int)
 
 (*void glp_ios_branch_upon(glp_tree *T, int j, int sel);*)
 let ios_branch_upon tree sel =
   let go = 
     foreign "glp_ios_branch_upon"
-      (Tree.tr @-> int @-> int @-> returning void)
+      (Tree.t @-> int @-> int @-> returning void)
   in 
   go tree (of_sel sel)
 
 (*void glp_ios_select_node(glp_tree *T, int p);*)
 let ios_select_node = 
   foreign "glp_ios_select_node"
-    (Tree.tr @-> int @-> returning void)
+    (Tree.t @-> int @-> returning void)
 
 
 (*int glp_ios_heur_sol(glp_tree *T, const double x[]);*)
 let ios_heur_sol =
   foreign "glp_ios_heur_sol"
-    (Tree.tr @-> float @-> returning int)
+    (Tree.t @-> float @-> returning int)
 
 (*void glp_ios_terminate(glp_tree *T);*)
 let ios_terminate = 
   foreign "glp_ios_terminate"
-    (Tree.tr @-> returning void)
+    (Tree.t @-> returning void)
 
 
 (*void glp_init_mpscp(glp_mpscp *parm);*)
 let init_mpscp =
   foreign "glp_init_mpscp"
-    (Mpscp.mp @-> returning void)
+    (Mpscp.t @-> returning void)
 
 (*int glp_read_mps(glp_prob *P, int fmt, const glp_mpscp *parm,
       const char *fname);*)
 let read_mps lp fmt mp = 
   let go =
     foreign "glp_read_mps"
-      (problem @-> int @-> Mpscp.mp @-> char @-> returning int )
+      (problem @-> int @-> Mpscp.t @-> string @-> returning int )
   in 
   go lp (of_fmt fmt)
 
@@ -1131,7 +1184,7 @@ int glp_write_mps(glp_prob *P, int fmt, const glp_mpscp *parm,
 let write_mps lp fmt mp = 
   let go =
     foreign "glp_write_mps"
-      (problem @-> int @-> Mpscp.mp @-> char @-> returning int )
+      (problem @-> int @-> Mpscp.t @-> string @-> returning int )
   in 
   go lp (of_fmt fmt)
 
@@ -1139,58 +1192,180 @@ let write_mps lp fmt mp =
 (* void glp_init_cpxcp(glp_cpxcp *parm); *)
 let init_cpxcp =
   foreign "glp_init_cpxcp"
-    (Cpxcp.cp @-> returning void)
+    (Cpxcp.t @-> returning void)
 
 
 (*int glp_read_lp(glp_prob *P, const glp_cpxcp *parm, const char *fname);*)
 let read_lp =
   foreign "glp_read_lp"
-    (problem @-> Cpxcp.cp @-> char @-> returning int )
+    (problem @-> Cpxcp.t @-> string @-> returning int )
 
 (*int glp_write_lp(glp_prob *P, const glp_cpxcp *parm, const char *fname);*)
 let write_lp =
   foreign "glp_write_lp"
-    (problem @-> Cpxcp.cp @-> char @-> returning int )
+    (problem @-> Cpxcp.t @-> string @-> returning int )
 
 (*int glp_read_prob(glp_prob *P, int flags, const char *fname);*)
 let read_prob =
   foreign "glp_read_prob"
-    (problem @-> int @-> char @-> returning int)
+    (problem @-> int @-> string @-> returning int)
 
 
 (*int glp_write_prob(glp_prob *P, int flags, const char *fname);*)
 let write_prob =
   foreign "glp_write_prob"
-    (problem @-> int @-> char @-> returning int)
+    (problem @-> int @-> string @-> returning int)
 
 (* I don't know
    glp_tran *glp_mpl_alloc_wksp(void);
    /* allocate the MathProg translator workspace */*)
 let mpl_alloc_wksp =
   foreign "glp_mpl_alloc_wksp"
-    (void @-> returning (ptr Tran.tr))
+    (void @-> returning (ptr Tran.t))
 
 (*int glp_mpl_read_model(glp_tran *tran, const char *fname, int skip);*)
 let mpl_read_model =
   foreign "glp_mpl_read_model"
-    (Tran.tr @-> char @-> int @-> returning int)
+    (Tran.t @-> string @-> int @-> returning int)
 
 (*int glp_mpl_read_data(glp_tran *tran, const char *fname);*)
 let mpl_read_data =
   foreign "glp_mpl_read_data"
-    (Tran.tr @-> char @-> returning int)
+    (Tran.t @-> string @-> returning int)
 
 
 (*int glp_mpl_generate(glp_tran *tran, const char *fname);*)
 let mpl_generate =
   foreign "glpp_mpl_generate"
-    (Tran.tr @-> char @-> returning int)
+    (Tran.t @-> string @-> returning int)
 
 
 (*void glp_mpl_build_prob(glp_tran *tran, glp_prob *prob);*)
 let mpl_build_prob =
   foreign "glp_mpl_build_prob"
-    (Tran.tr @-> problem @-> returning void)
+    (Tran.t @-> problem @-> returning void)
+
+
+(*int glp_mpl_postsolve(glp_tran *tran, glp_prob *prob, int sol);
+let mpl_postsolve lp =
+ let go =
+   foreign "glp_mpl_postsolve"
+     (ptr Tran.t @-> problem @-> int @-> returning int   )
+ in 
+ go lp (of_solution solution)
+
+*)
+
+
+(*void glp_mpl_free_wksp(glp_tran *tran);*)
+let mpl_free_wksp =
+ foreign "glp_mpl_free_wksp"
+   (Tran.t  @-> returning void)
+
+(*int glp_main(int argc, const char *argv[]);*)
+let main =
+ foreign "glp_main"
+  (int @-> string @-> returning int)
+
+(*int glp_read_cnfsat(glp_prob *P, const char *fname);*)
+let read_cnfsat =
+ foreign "glp_read_cnfsat"
+  (problem @-> string @-> returning int)
+
+(*int glp_check_cnfsat(glp_prob *P);*)
+let check_cnfsat =
+ foreign "glp_check_cnfsat"
+  (problem @-> returning int )
+
+(*int glp_write_cnfsat(glp_prob *P, const char *fname);*)
+let write_cnfsat = 
+ foreign "glp_write_cnfsat"
+  (problem @-> string @-> returning int)
+
+(*int glp_minisat1(glp_prob *P);*)
+let minisat1 =
+  foreign "glp_minisat1"
+   (problem @-> returning int)
+
+
+
+(*int glp_init_env(void);*)
+let init_env =
+ foreign "glp_init_env"
+   (void @-> returning int)
+
+
+(*const char *glp_version(void);*)
+let version =
+ foreign "glp_version"
+  (void @-> returning string)
+
+(*int glp_free_env(void);*)
+let free_env =
+ foreign "glp_free_env"
+  (void @-> returning int)
+
+(*void glp_puts(const char *s);*)
+let puts =
+  foreign "glp_puts"
+    (string @-> returning void)
+
+
+
+
+
+(*int glp_term_out(int flag);*)
+let term_out =
+ foreign "glp_term_out"
+   (int @-> returning int)
+
+
+
+
+
+
+
+(*int glp_open_tee(const char *name);*)
+let open_tee =
+ foreign "glp_open_tee"
+  (string @-> returning int)
+
+
+(*int glp_close_tee(void);*)
+let close_tee =
+ foreign "glp_close_tee"
+  (void @-> returning int)
+
+
+
+(*void glp_assert_(const char *expr, const char *file, int line);*)
+let assert_ =
+ foreign "glp_assert"
+  (string @-> string @-> int @-> returning void)
+
+
+
+
+
+(*void *glp_alloc(int n, int size);*)
+let alloc = 
+ foreign "glp_alloc"
+  (int @-> int @-> returning (ptr void))
+
+(*void *glp_realloc(void *ptr, int n, int size);*)
+let realloc =
+ foreign "glp_realloc"
+  (ptr void @-> int @-> int @-> returning void)
+
+(*void glp_free(void *ptr);*)
+let free =
+ foreign "glp_free"
+   (ptr void @-> returning void)
+
+(*void glp_mem_limit(int limit);*)
+let mem_limit =
+ foreign "glp_mem_limit"
+  (int @-> returning void)
 
 
 
